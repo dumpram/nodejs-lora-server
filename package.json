@@ -16,5 +16,10 @@
   "repository": {
     "type": "git",
     "url": "github.com/dumpram/nodejs-lora-server"
-  }
+  },
+  "dependencies": 
+    { 	"mqtt": "*"
+
+    }
+
 }
