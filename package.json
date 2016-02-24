@@ -1,0 +1,20 @@
+{
+  "name": "nodejs-lora-server",
+  "version": "1.0.0",
+  "description": "Nodejs Lora Server for handling pktfwd requests.",
+  "main": "lora-server.js",
+  "scripts": {
+    "test": "nodejs lora-server.js"
+  },
+  "keywords": [
+    "lora",
+    "server",
+    "js"
+  ],
+  "author": "Ivan Pavic",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "github.com/dumpram/nodejs-lora-server"
+  }
+}
