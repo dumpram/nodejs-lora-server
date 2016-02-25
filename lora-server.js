@@ -9,7 +9,7 @@ server.on('error', (err) => {
 
 server.on('message', (msg, rinfo) => {
   console.log(`server got: ${msg} from ${rinfo.address}:${rinfo.port}`);
-  server.send(msg, 0, msg.length, 41234, "192.168.19.175");
+  server.send(msg, 0, msg.length, 1782, "192.168.19.175");
 });
 
 server.on('listening', () => {
@@ -17,4 +17,4 @@ server.on('listening', () => {
   console.log(`server listening ${address.address}:${address.port}`);
 });
 
-server.bind(41234, "192.168.19.101");
+server.bind(1780, "192.168.19.161");
