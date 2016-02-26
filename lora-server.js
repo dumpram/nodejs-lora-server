@@ -90,10 +90,9 @@ serverDown.on('message', (buffDw, rinfo) => {
     buffResp[1] = tokenH;
     buffResp[2] = tokenL;
     buffResp[3] = PKT_PULL_RESP;
-
-    serverDown.send(buffResp, 0, buffResp.length, port, addr);          
+    serverDown.send(buffResp, 0, buffResp.length, port, addr);   
+	
 });
-
 
 serverUp.on('listening', () => {
     var address = serverUp.address();
@@ -105,6 +104,23 @@ serverDown.on('listening', () => {
     console.log('[DOWN] Server listening: ' + address);
 });
 
+function TxPacket(codr, data, datr, freq, ipol, modu, ncrc, powe, rfch, size, tmst) {
+	this.codr = codr;
+	this.data = data;
+	this.datr = datr;
+	this.freq = freq;
+	this.ipol = ipol;
+	this.modu = modu;
+	this.ncrc = ncrc;
+	this.powe = powe;
+	this.rfch = rfch;
+	this.size = size;
+	this.tmst = tmst;
+}
+
+function getDefaultTxPacket() {
+	return TxPacket("4/5", "", "SF12BW125", 869.525, true, "LORA", false, 14, 0, 12, Date.Now() + 50);
+}
 
 serverUp.bind(1780, "192.168.19.101");
 serverDown.bind(1782, "192.168.19.101");
