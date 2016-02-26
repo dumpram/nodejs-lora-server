@@ -85,13 +85,14 @@ serverDown.on('message', (buffDw, rinfo) => {
         return;
     }
 	
-    var buffRespH = new Buffer(12);
+    var buffRespH = new Buffer(4);
     buffRespH[0] = PROTOCOL_VERSION;
     buffRespH[1] = tokenH;
     buffRespH[2] = tokenL;
     buffRespH[3] = PKT_PULL_RESP;
     var buffRespP = new Buffer(JSON.stringify(getDefaultTxPacket()));
     var buffResp = new Buffer.concat([buffRespH, buffRespP]);
+    console.log("[DOWN] Resp: " + buffRespP);
     serverDown.send(buffResp, 0, buffResp.length, port, addr);   
 	
 });
@@ -107,7 +108,8 @@ serverDown.on('listening', () => {
 });
 
 function TxPacket(codr, data, datr, freq, ipol, modu, ncrc, powe, rfch, size, tmst) {
-    var txpx = {
+    var txpk = 
+    {"txpk":{
       "codr" : codr,
       "data" : data,
       "datr" : datr,
@@ -119,12 +121,21 @@ function TxPacket(codr, data, datr, freq, ipol, modu, ncrc, powe, rfch, size, tm
       "rfch" : rfch,
       "size" : size,
       "tmst" : tmst
-   };
-   return txpx;
+   }};
+   return txpk;
 }
 
 function getDefaultTxPacket() {
-	return TxPacket("4/5", "", "SF12BW125", 869.525, true, "LORA", false, 14, 0, 12, Date.now() + 50);
+	return TxPacket("4/5", "", "SF12BW125", 869.525, true, "LORA", false, 14, 0, 0, Date.now() + 50);
+}
+
+function cpTx() {
+    var test = {"txpk" : {
+        "codr" : "4/5",
+        "data" : "YAYAYAf",
+        "datr" : "SF12BW125"
+    }};
+    return test;
 }
 
 serverUp.bind(1780, "192.168.19.101");
