@@ -85,11 +85,13 @@ serverDown.on('message', (buffDw, rinfo) => {
         return;
     }
 	
-    var buffResp = new Buffer(12);
-    buffResp[0] = PROTOCOL_VERSION;
-    buffResp[1] = tokenH;
-    buffResp[2] = tokenL;
-    buffResp[3] = PKT_PULL_RESP;
+    var buffRespH = new Buffer(12);
+    buffRespH[0] = PROTOCOL_VERSION;
+    buffRespH[1] = tokenH;
+    buffRespH[2] = tokenL;
+    buffRespH[3] = PKT_PULL_RESP;
+    var buffRespP = new Buffer(getDefaultTxPacket());
+    var buffResp = new Buffer.concat([buffRespH, buffRespP]);
     serverDown.send(buffResp, 0, buffResp.length, port, addr);   
 	
 });
@@ -119,7 +121,7 @@ function TxPacket(codr, data, datr, freq, ipol, modu, ncrc, powe, rfch, size, tm
 }
 
 function getDefaultTxPacket() {
-	return TxPacket("4/5", "", "SF12BW125", 869.525, true, "LORA", false, 14, 0, 12, Date.Now() + 50);
+	return TxPacket("4/5", "", "SF12BW125", 869.525, true, "LORA", false, 14, 0, 12, Date.now() + 50);
 }
 
 serverUp.bind(1780, "192.168.19.101");
