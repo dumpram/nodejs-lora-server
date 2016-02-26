@@ -9,7 +9,10 @@ server.on('error', (err) => {
 
 server.on('message', (msg, rinfo) => {
   console.log(`server got: ${msg} from ${rinfo.address}:${rinfo.port}`);
-  server.send(msg, 0, msg.length, 1782, "192.168.19.175");
+  
+  var jsonData = msg.substr(4);
+  console.log('JSON:' + jsonData);
+  //server.send(msg, 0, msg.length, 1782, "192.168.19.175");
 });
 
 server.on('listening', () => {
