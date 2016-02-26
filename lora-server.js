@@ -90,7 +90,7 @@ serverDown.on('message', (buffDw, rinfo) => {
     buffRespH[1] = tokenH;
     buffRespH[2] = tokenL;
     buffRespH[3] = PKT_PULL_RESP;
-    var buffRespP = new Buffer(getDefaultTxPacket());
+    var buffRespP = new Buffer(getDefaultTxPacket().toString());
     var buffResp = new Buffer.concat([buffRespH, buffRespP]);
     serverDown.send(buffResp, 0, buffResp.length, port, addr);   
 	
