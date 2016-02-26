@@ -26,6 +26,13 @@ serverUp.on('message', (buffUp, rinfo) => {
         console.log("buffUp[" + i + "] = " + buffUp[i]);
     }
 
+    /** Sender's info **/
+    var addrUp = rinfo.address;
+    var portUp = rinfo.port;
+
+    console.log("ADDR:" + addrUp);
+    console.log("PORT:" + portUp);
+
     /** Random tokens **/
     var tokenH = buffUp[1];
     var tokenL = buffUp[2];
@@ -42,7 +49,7 @@ serverUp.on('message', (buffUp, rinfo) => {
     var jsonOffset = UDP_MSG_PRMBL_OFF;
     console.log("jsonOffset: " + jsonOffset);
     var jsonStr = msgStr.substring(jsonOffset);
-    var json = JSON.parse(jsonStr);
+//    var json = JSON.parse(jsonStr);
     
     var buffAck = new Buffer(4);
     buffAck[0] = PROTOCOL_VERSION;
@@ -50,8 +57,8 @@ serverUp.on('message', (buffUp, rinfo) => {
     buffAck[2] = tokenL;
     buffAck[3] = PKT_PUSH_ACK;
 
-    console.log('JSON:' + json);
-    //setTimeout(() => serverUp.send(buffAck, 0, buffAck.length, 1780, "192.168.19.161"), 100);
+//    console.log('JSON:' + json);
+    serverUp.send(buffAck, 0, buffAck.length, portUp, addrUp);
     //For some reason no UP ack is working yet
 
 });
@@ -71,14 +78,17 @@ serverDown.on('message', (buffDw, rinfo) => {
 
     //TO DO: Check protocol consistency 
 
+    if (packtD != PKT_PULL_DATA) {
+        return;
+    }
+
     var buffResp = new Buffer(12);
     buffResp[0] = PROTOCOL_VERSION;
     buffResp[1] = tokenH;
     buffResp[2] = tokenL;
-    buffResp[3] = PKT_PULL_RESP;
+    buffResp[3] = PKT_PULL_ACK;
 
-    serverDown.send(buffResp, buffResp.length, 192.168.19.161, 1782); 
-         
+    serverDown.send(buffResp, 0, buffResp.length, 1782, "192.168.19.161", (err) => {});          
 });
 
 
