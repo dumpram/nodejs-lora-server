@@ -89,7 +89,7 @@ serverDown.on('message', (buffDw, rinfo) => {
     buffResp[0] = PROTOCOL_VERSION;
     buffResp[1] = tokenH;
     buffResp[2] = tokenL;
-    buffResp[3] = PKT_PULL_ACK;
+    buffResp[3] = PKT_PULL_RESP;
 
     serverDown.send(buffResp, 0, buffResp.length, port, addr);          
 });
