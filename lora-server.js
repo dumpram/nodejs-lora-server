@@ -27,11 +27,11 @@ serverUp.on('message', (buffUp, rinfo) => {
     }
 
     /** Sender's info **/
-    var addrUp = rinfo.address;
-    var portUp = rinfo.port;
+    var addr = rinfo.address;
+    var port = rinfo.port;
 
-    console.log("ADDR:" + addrUp);
-    console.log("PORT:" + portUp);
+    console.log("ADDR:" + addr);
+    console.log("PORT:" + port);
 
     /** Random tokens **/
     var tokenH = buffUp[1];
@@ -43,7 +43,7 @@ serverUp.on('message', (buffUp, rinfo) => {
     /** Packet direction **/
     var pakctD = buffUp[3];    
     
-    //To do: verify necessary flags
+    //To do: check protocol consistency
 
     var msgStr = buffUp.toString();
     var jsonOffset = UDP_MSG_PRMBL_OFF;
@@ -58,7 +58,7 @@ serverUp.on('message', (buffUp, rinfo) => {
     buffAck[3] = PKT_PUSH_ACK;
 
 //    console.log('JSON:' + json);
-    serverUp.send(buffAck, 0, buffAck.length, portUp, addrUp);
+    serverUp.send(buffAck, 0, buffAck.length, port, addr);
     //For some reason no UP ack is working yet
 
 });
@@ -66,7 +66,11 @@ serverUp.on('message', (buffUp, rinfo) => {
 serverDown.on('message', (buffDw, rinfo) => {
     console.log('[DOWN] Server got(RAW): ' + buffDw);
     
-    /** Protocol version **/
+    /** Sender's info **/
+    var addr = rinfo.address;
+    var port = rinfo.port;
+	
+	/** Protocol version **/
     var protoV = buffDw[0];
 
     /** Random tokens for time sync **/    
@@ -75,20 +79,19 @@ serverDown.on('message', (buffDw, rinfo) => {
 
     /** Packet direction **/
     var packtD = buffDw[3];
-
+	
     //TO DO: Check protocol consistency 
-
     if (packtD != PKT_PULL_DATA) {
         return;
     }
-
+	
     var buffResp = new Buffer(12);
     buffResp[0] = PROTOCOL_VERSION;
     buffResp[1] = tokenH;
     buffResp[2] = tokenL;
     buffResp[3] = PKT_PULL_ACK;
 
-    serverDown.send(buffResp, 0, buffResp.length, 1782, "192.168.19.161", (err) => {});          
+    serverDown.send(buffResp, 0, buffResp.length, port, addr);          
 });
 
 
