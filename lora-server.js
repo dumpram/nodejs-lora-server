@@ -90,7 +90,7 @@ serverDown.on('message', (buffDw, rinfo) => {
     buffRespH[1] = tokenH;
     buffRespH[2] = tokenL;
     buffRespH[3] = PKT_PULL_RESP;
-    var buffRespP = new Buffer(getDefaultTxPacket().toString());
+    var buffRespP = new Buffer(JSON.stringify(getDefaultTxPacket()));
     var buffResp = new Buffer.concat([buffRespH, buffRespP]);
     serverDown.send(buffResp, 0, buffResp.length, port, addr);   
 	
@@ -107,17 +107,20 @@ serverDown.on('listening', () => {
 });
 
 function TxPacket(codr, data, datr, freq, ipol, modu, ncrc, powe, rfch, size, tmst) {
-	this.codr = codr;
-	this.data = data;
-	this.datr = datr;
-	this.freq = freq;
-	this.ipol = ipol;
-	this.modu = modu;
-	this.ncrc = ncrc;
-	this.powe = powe;
-	this.rfch = rfch;
-	this.size = size;
-	this.tmst = tmst;
+    var txpx = {
+      "codr" : codr,
+      "data" : data,
+      "datr" : datr,
+      "freq" : freq,
+      "ipol" : ipol,
+      "modu" : modu,
+      "ncrc" : ncrc,
+      "powe" : powe,
+      "rfch" : rfch,
+      "size" : size,
+      "tmst" : tmst
+   };
+   return txpx;
 }
 
 function getDefaultTxPacket() {
