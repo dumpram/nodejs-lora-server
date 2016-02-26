@@ -1,6 +1,7 @@
 var mqtt = require('mqtt');
 var dgram  = require('dgram');
-var server = dgram.createSocket('udp4');
+var serverUp = dgram.createSocket('udp4');
+var serverDown = dgram.createSocket('udp4');
 
 const UDP_MSG_PRMBL_OFF = 12;
 const DEFAULT_PORT_UP   = 1780;
@@ -13,14 +14,14 @@ const PKT_PULL_DATA     = 2;
 const PKT_PULL_RESP     = 3;
 const PKT_PULL_ACK      = 4;
 
-server.on('error', (err) => {
-  console.log(`server error:\n${err.stack}`);
-  server.close();
+serverUp.on('error', (err) => {
+    console.log(`serverUp error:\n${err.stack}`);
+    serverUp.close();
 });
 
-server.on('message', (buffUp, rinfo) => {
- // console.log(`server got: ${msg} from ${rinfo.address}:${rinfo.port}`);   
-    console.log("UP: Server got(RAW): " + buffUp);
+serverUp.on('message', (buffUp, rinfo) => {
+ // console.log(`serverUp got: ${msg} from ${rinfo.address}:${rinfo.port}`);   
+    console.log("UP: serverUp got(RAW): " + buffUp);
     for (var i = 0; i < UDP_MSG_PRMBL_OFF; i ++) {
         console.log("buffUp[" + i + "] = " + buffUp[i]);
     }
@@ -50,13 +51,47 @@ server.on('message', (buffUp, rinfo) => {
     buffAck[3] = PKT_PUSH_ACK;
 
     console.log('JSON:' + json);
-    setTimeout(() => server.send(buffAck, 0, buffAck.length, 1780, "192.168.19.161"), 100);
+    //setTimeout(() => serverUp.send(buffAck, 0, buffAck.length, 1780, "192.168.19.161"), 100);
+    //For some reason no UP ack is working yet
+
+});
+
+serverDown.on('message', (buffDw, rinfo) => {
+    console.log('[DOWN] Server got(RAW): ' + buffDw);
+    
+    /** Protocol version **/
+    var protoV = buffDw[0];
+
+    /** Random tokens for time sync **/    
+    var tokenH = buffDw[1];
+    var tokenL = buffDw[2];
+
+    /** Packet direction **/
+    var packtD = buffDw[3];
+
+    //TO DO: Check protocol consistency 
+
+    var buffResp = new Buffer(12);
+    buffResp[0] = PROTOCOL_VERSION;
+    buffResp[1] = tokenH;
+    buffResp[2] = tokenL;
+    buffResp[3] = PKT_PULL_RESP;
+
+    serverDown.send(buffResp, buffResp.length, 192.168.19.161, 1782); 
+         
 });
 
 
-server.on('listening', () => {
-  var address = server.address();
-  console.log(`server listening ${address.address}:${address.port}`);
+serverUp.on('listening', () => {
+    var address = serverUp.address();
+    console.log('[UP] Server listening: ' + address);
 });
 
-server.bind(1780, "192.168.19.101");
+serverDown.on('listening', () => {
+    var address = serverDown.address();
+    console.log('[DOWN] Server listening: ' + address);
+});
+
+
+serverUp.bind(1780, "192.168.19.101");
+serverDown.bind(1782, "192.168.19.101");
