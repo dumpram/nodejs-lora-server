@@ -90,7 +90,7 @@ function Major() {
  * Device address -> 4 bytes.
  */
 function DevAddr() {
-
+    return new Shared.getRandomBytes(4);
 }
 /**
  * Direction flag indicates stream direction. If true message is uplink,
