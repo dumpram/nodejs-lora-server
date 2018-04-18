@@ -2,6 +2,7 @@ var mqtt = require('mqtt');
 var dgram  = require('dgram');
 var serverUp = dgram.createSocket('udp4');
 var serverDown = dgram.createSocket('udp4');
+var os = require( 'os' );
 
 const UDP_MSG_PRMBL_OFF = 12;
 const DEFAULT_PORT_UP   = 1780;
@@ -20,7 +21,7 @@ serverUp.on('error', (err) => {
 });
 
 serverUp.on('message', (buffUp, rinfo) => {
- // console.log(`serverUp got: ${msg} from ${rinfo.address}:${rinfo.port}`);   
+ // console.log(`serverUp got: ${msg} from ${rinfo.address}:${rinfo.port}`);
     console.log("UP: serverUp got(RAW): " + buffUp);
     for (var i = 0; i < UDP_MSG_PRMBL_OFF; i ++) {
         console.log("buffUp[" + i + "] = " + buffUp[i]);
@@ -36,13 +37,13 @@ serverUp.on('message', (buffUp, rinfo) => {
     /** Random tokens **/
     var tokenH = buffUp[1];
     var tokenL = buffUp[2];
-    
+
     /** Protocol version **/
     var protoV = buffUp[0];
 
     /** Packet direction **/
-    var pakctD = buffUp[3];    
-    
+    var pakctD = buffUp[3];
+
     //To do: check protocol consistency
 
     var msgStr = buffUp.toString();
@@ -50,7 +51,7 @@ serverUp.on('message', (buffUp, rinfo) => {
     console.log("jsonOffset: " + jsonOffset);
     var jsonStr = msgStr.substring(jsonOffset);
 //    var json = JSON.parse(jsonStr);
-    
+
     var buffAck = new Buffer(4);
     buffAck[0] = PROTOCOL_VERSION;
     buffAck[1] = tokenH;
@@ -65,26 +66,26 @@ serverUp.on('message', (buffUp, rinfo) => {
 
 serverDown.on('message', (buffDw, rinfo) => {
     console.log('[DOWN] Server got(RAW): ' + buffDw);
-    
+
     /** Sender's info **/
     var addr = rinfo.address;
     var port = rinfo.port;
-	
+
 	/** Protocol version **/
     var protoV = buffDw[0];
 
-    /** Random tokens for time sync **/    
+    /** Random tokens for time sync **/
     var tokenH = buffDw[1];
     var tokenL = buffDw[2];
 
     /** Packet direction **/
     var packtD = buffDw[3];
-	
-    //TO DO: Check protocol consistency 
+
+    //TO DO: Check protocol consistency
     if (packtD != PKT_PULL_DATA) {
         return;
     }
-	
+
     var buffRespH = new Buffer(4);
     buffRespH[0] = PROTOCOL_VERSION;
     buffRespH[1] = tokenH;
@@ -93,8 +94,8 @@ serverDown.on('message', (buffDw, rinfo) => {
     var buffRespP = new Buffer(JSON.stringify(getDefaultTxPacket()));
     var buffResp = new Buffer.concat([buffRespH, buffRespP]);
     console.log("[DOWN] Resp: " + buffRespP);
-    serverDown.send(buffResp, 0, buffResp.length, port, addr);   
-	
+    serverDown.send(buffResp, 0, buffResp.length, port, addr);
+
 });
 
 serverUp.on('listening', () => {
@@ -108,7 +109,7 @@ serverDown.on('listening', () => {
 });
 
 function TxPacket(codr, data, datr, freq, ipol, modu, ncrc, powe, rfch, size, tmst) {
-    var txpk = 
+    var txpk =
     {"txpk":{
       "codr" : codr,
       "data" : data,
@@ -137,6 +138,7 @@ function cpTx() {
     }};
     return test;
 }
-
-serverUp.bind(1780, "192.168.19.101");
-serverDown.bind(1782, "192.168.19.101");
+//Getting local address
+var networkInterface = os.networkInterfaces().lo0[0].address;
+serverUp.bind(1780, networkInterface);
+serverDown.bind(1782, networkInterface);
