@@ -192,3 +192,14 @@ function FPending() {
 function FOptsLen() {
 
 }
+
+function getMic(data) {
+    var mic = new Buffer(4);
+    var j = 0;
+    for (i = data.length-4; i < data.length; i++)
+    {
+        mic[j] = PHYPayload[i];
+        j++;
+    }
+    return mic;
+}
