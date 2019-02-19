@@ -11,15 +11,13 @@
     "server",
     "js"
   ],
-  "author": "Ivan Pavic",
+  "author": "Ivan Pavic, Vinicius Figueiredo (mvcf10@gmail.com)",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "github.com/dumpram/nodejs-lora-server"
+    "url": "github.com/mvcf10/nodejs-lora-server"
   },
-  "dependencies": 
-    { 	"mqtt": "*"
-
-    }
-
+  "dependencies": {
+    "mqtt": "*"
+  }
 }
